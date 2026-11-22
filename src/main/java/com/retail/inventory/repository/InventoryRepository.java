@@ -14,6 +14,10 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
     Optional<Inventory> findByItemIgnoreCase(String item);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @Query("select inventory from Inventory inventory where lower(inventory.item) = lower(:item)")
+    @Query("""
+            select inventory
+            from Inventory inventory
+            where lower(inventory.item) = lower(:item)
+            """)
     Optional<Inventory> findByItemForUpdate(@Param("item") String item);
 }

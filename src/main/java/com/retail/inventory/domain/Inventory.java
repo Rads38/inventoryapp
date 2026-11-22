@@ -46,11 +46,9 @@ public class Inventory {
         if (quantity == null || quantity <= 0) {
             throw new IllegalArgumentException("Reservation quantity must be positive");
         }
-
         if (availableQuantity < quantity) {
             throw new IllegalStateException("Insufficient inventory for item: " + item);
         }
-
         availableQuantity -= quantity;
     }
 }

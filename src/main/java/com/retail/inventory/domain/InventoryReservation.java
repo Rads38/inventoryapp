@@ -37,12 +37,8 @@ public class InventoryReservation {
     protected InventoryReservation() {
     }
 
-    public InventoryReservation(
-            String orderId,
-            String item,
-            Integer quantity,
-            ReservationStatus status
-    ) {
+    public InventoryReservation(String orderId, String item, Integer quantity,
+                                ReservationStatus status) {
         this.orderId = orderId;
         this.item = item;
         this.quantity = quantity;
@@ -50,19 +46,8 @@ public class InventoryReservation {
         this.createdAt = Instant.now();
     }
 
-    public String getOrderId() {
-        return orderId;
-    }
-
-    public String getItem() {
-        return item;
-    }
-
-    public Integer getQuantity() {
-        return quantity;
-    }
-
-    public ReservationStatus getStatus() {
-        return status;
-    }
+    public String getOrderId() { return orderId; }
+    public String getItem() { return item; }
+    public Integer getQuantity() { return quantity; }
+    public ReservationStatus getStatus() { return status; }
 }
