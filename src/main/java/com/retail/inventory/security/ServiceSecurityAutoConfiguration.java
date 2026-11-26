@@ -10,7 +10,7 @@ public class ServiceSecurityAutoConfiguration {
    .authorizeHttpRequests(auth->auth.requestMatchers("/actuator/health").permitAll()
     .requestMatchers("/h2-console/**").permitAll()
     .requestMatchers("/inventory/**").hasAnyRole("INVENTORY_SERVICE","ORDER_SERVICE","ADMIN")
-    .anyRequest().authenticated())
+    .anyRequest().hasAnyRole("INVENTORY_SERVICE","ORDER_SERVICE","ADMIN"))
    .oauth2ResourceServer(oauth2->oauth2.jwt(jwt->jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())));
   return http.build();
  }
