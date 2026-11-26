@@ -4,49 +4,47 @@ Inventory microservice for the Retail Microservices Saga capstone.
 
 ## Responsibilities
 
-- Registers with Eureka as `INVENTORY-SERVICE`.
-- Consumes reservation requests from Kafka topic `inventory-reservation-events`.
-- Reserves available stock in a local database transaction.
-- Makes request processing idempotent using the unique order ID.
-- Publishes reservation results to Kafka topic `inventory-events`.
+- Registers with Eureka as INVENTORY-SERVICE.
+- Consumes reservation requests from inventory-reservation-events.
+- Reserves stock in a local database transaction.
+- Uses order ID for idempotent processing.
+- Publishes results to inventory-events.
 
 ## Local setup
 
-Requirements: Java 21, Maven, Eureka Server running at `localhost:8761`, and Kafka running at `localhost:9092`.
+Run with Maven: mvn spring-boot:run
 
-```bash
-mvn spring-boot:run
-```
+- Service name: INVENTORY-SERVICE
+- Port: 7004
+- Eureka Dashboard: http://localhost:8761
+- Inventory API: http://localhost:7004/inventory
+- H2 Console: http://localhost:7004/h2-console
+- JDBC URL: jdbc:h2:mem:inventorydb
+- H2 login: username sa; blank password
 
-Service port: `7004`. Inventory API: `GET http://localhost:7004/inventory`.
+## Database and table state
 
-H2 console: `http://localhost:7004/h2-console`  
-JDBC URL: `jdbc:h2:mem:inventorydb`  
-Username: `sa`; password: blank.
+Uses in-memory H2 database inventorydb. Initial stock: Laptop 10, Mobile 20, Headphones 15. Successful reservation reduces available stock and stores the reservation outcome. Repeated requests with the same order ID do not decrement stock twice. JPA ddl-auto=update.
 
-Initial stock: Laptop (10), Mobile (20), Headphones (15).
+## Kafka request payload
 
-## Kafka event contracts
+Topic: inventory-reservation-events
 
-Request message on `inventory-reservation-events`:
+    {
+      "orderId": "101",
+      "item": "Laptop",
+      "quantity": 1
+    }
 
-```json
-{
-  "orderId": "101",
-  "item": "Laptop",
-  "quantity": 1
-}
-```
+## Kafka result payload
 
-Result message on `inventory-events`:
+Topic: inventory-events
 
-```json
-{
-  "orderId": "101",
-  "item": "Laptop",
-  "reservationStatus": "RESERVED",
-  "message": "Inventory reserved successfully"
-}
-```
+    {
+      "orderId": "101",
+      "item": "Laptop",
+      "reservationStatus": "RESERVED",
+      "message": "Inventory reserved successfully"
+    }
 
-Repeated requests with the same order ID return the stored outcome without decrementing stock again.
+Eureka registry: http://localhost:8761/eureka/
