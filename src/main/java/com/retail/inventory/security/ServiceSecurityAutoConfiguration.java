@@ -2,6 +2,7 @@ package com.retail.inventory.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.GrantedAuthority;
@@ -25,8 +26,11 @@ public class ServiceSecurityAutoConfiguration {
                 .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/actuator/health", "/h2-console/**").permitAll()
-                        .requestMatchers("/inventory/**").hasAnyRole("INVENTORY_SERVICE", "ORDER_SERVICE", "ADMIN")
-                        .anyRequest().hasAnyRole("INVENTORY_SERVICE", "ORDER_SERVICE", "ADMIN"))
+                        // Inventory is read-only for customers; services and admins also need access.
+                        .requestMatchers(HttpMethod.GET, "/inventory/**")
+                            .hasAnyRole("CUSTOMER", "ADMIN", "INVENTORY_SERVICE", "ORDER_SERVICE")
+                        .anyRequest()
+                            .hasAnyRole("INVENTORY_SERVICE", "ORDER_SERVICE", "ADMIN"))
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())));
 
